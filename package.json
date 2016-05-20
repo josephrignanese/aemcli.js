@@ -1,0 +1,27 @@
+{
+  "name": "aemcli",
+  "version": "0.0.1",
+  "description": "A command line tool for interacting with an AEM instance",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "aem",
+    "command",
+    "line",
+    "cli"
+  ],
+  "author": "Joseph Rignanese",
+  "license": "ISC",
+  "bin": {
+    "aem": "./index.js"
+  },
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "co": "^4.6.0",
+    "co-prompt": "^1.0.0",
+    "commander": "tj/commander.js#ad2e5392f5c1ff22059d34b7232014dcd862a344",
+    "progress": "^1.1.8",
+    "superagent": "^1.8.3"
+  }
+}
