@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-var program = require("commander");
-var programutils = require("./commandutils");
-
-programutils.setCommonOptions(program);
+var program = require('commander');
+var programutils = require('./commandutils');
 
 program
-    .command("install", "Install a package");
+    .command('install', 'Installs a package');
 
 program.parse(process.argv);
