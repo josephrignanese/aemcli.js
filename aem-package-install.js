@@ -18,6 +18,11 @@ program
 var handler = function(file) {
     console.info('Executing upload for %s on %s', file, program.url);
 
+    var pauseInstallationNodeCount = getPauseInstallationNodeCount();
+    if (pauseInstallationNodeCount != 0) {
+        console.warn('Detected %s pauseInstallation nodes. Installation may not behave as expected.', pauseInstallationNodeCount);
+    }
+
     var installPath;
 
     httpclient
@@ -98,6 +103,20 @@ var handleUploadComplete = function (installPath) {
         });
 
 };
+
+var getPauseInstallationNodeCount = function () {
+    httpclient
+        .get('/bin/querybuilder.json')
+        .set('Accept', 'application/json')
+        .query('path=/system/sling/installer/jcr/pauseInstallation')
+        .end(function (err, res) {
+            if (!err && res.ok) {
+                return res.body.total;
+            } else {
+                return -1;
+            }
+        });
+}
 
 var handleInstallComplete = function () {
     // TODO
