@@ -29,3 +29,11 @@ A command line interface for interacting with AEM APIs.
     -r, --recursive            When installing, recursively install the package
     -a, --ac-handling <mode>   Set access control handling on the install
 
+
+### Report Tags
+
+  Usage: aem report tags [options] <file>
+
+  Options:
+
+    -r, --root-path <root-path>  When reporting start from this point. Default is /etc/tags
