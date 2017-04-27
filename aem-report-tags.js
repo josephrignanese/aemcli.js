@@ -19,37 +19,39 @@ var URL_TAGGED_ITEMS = '/bin/tagcommand';
 programutils.setCommonOptions(program);
 
 program
-    .option('-r, --root-path <root-path>', 'When reporting start from this point. Default is /etc/tags', /^\/etc\/tags([\/].+)?$/, '/etc/tags');
-    //TODO: Fix the limit option
-    // .option('-l, --limit <limit>', 'The tag limit. Default is 30', myParseInt, 30);
+    .option('-r, --root-path <root-path>', 'When reporting start from this point. Default is /etc/tags', /^\/etc\/tags([\/].+)?$/, DEFAULT_ROOT_PATH)
+    .option('-l, --limit <limit>', 'The tag pagination limit. Default is 30', /^[0-9]+$/, DEFAULT_LIMIT);
 
 program.arguments('<file>');
 
 var tags = new Array(0);
 var tagLists = { paths: new Set() };
 var fileName;
+var limit;
 
 var handler = function(file) {
     console.info('Executing tag report and outputting to file %s for %s', file, program.url);
-    console.log('Root path set to %s', program.rootPath ? program.rootPath : DEFAULT_ROOT_PATH);
-    console.log('Limit set to %s', program.limit ? program.limit : DEFAULT_LIMIT);
+    limit = program.limit ? parseInt(program.limit, 10) : DEFAULT_LIMIT; // Limit needs to be an int
+
+    console.log('Root path set to %s', program.rootPath);
+    console.log('Limit set to %s', program.limit);
     console.log('Output file set to %s', file);
 
     fileName = file;
 
-    handleTag(program.rootPath ? program.rootPath : DEFAULT_ROOT_PATH, 0);
+    handleTag(program.rootPath, 0);
 };
 
 var handleTag = function (tag, start) {
     var tagUrl = URL_TAG_LIST.replace(new RegExp(TAG_PLACEHOLDER, 'g'), tag);
-    console.log('Getting tag list for tag %s with start %s and limit %s. API url is: %s', tag, start, program.limit ? program.limit : DEFAULT_LIMIT, tagUrl);
+    console.log('Getting tag list for tag %s with start %s and limit %s. API url is: %s', tag, start, limit, tagUrl);
     httpclient
         .get(program.url + tagUrl)
         .auth(program.username, program.password)
         .set('Accept', 'application/json')
         .query({
             start: start,
-            limit: program.limit ? program.limit : DEFAULT_LIMIT,
+            limit: limit,
             count: 'true'
         })
         .end(function (err, res) {
@@ -64,11 +66,10 @@ var handleTag = function (tag, start) {
                 });
 
                 handleTagList(res.body.tags);
-                start = start + (program.limit ? program.limit : DEFAULT_LIMIT);
+                start = start + limit;
                 if (results > start) {
                     handleTag(tag, start);
                 }
-                console.log("Total results %s", results);
             } else {
                 console.error('Error during get tag list, %s', err);
                 if (err.response)
@@ -120,7 +121,6 @@ var getTaggedItems = function (tag) {
 }
 
 var writeOutput = function() {
-    // Only proceed if the count matches
     // TODO: remove this once we are using promises.
     if (!checkDataIsReady()) {
         //DEBUG: console.log('checkDataIsReady returned false, skipping execution');
@@ -182,7 +182,8 @@ var writeOutput = function() {
 }
 
 var checkDataIsReady = function() {
-    // Test is not completely accurate as some requests can still be in progress.
+    // Only proceed if the count matches
+    // Note: Test is not completely accurate as some requests can still be in progress.
     var tagCount = 0;
     tagLists.paths.forEach(function (path) {
         //DEBUG: console.log("Check: Tag %s has %s children", path, tagLists[path]);
@@ -197,16 +198,6 @@ var checkDataIsReady = function() {
 var getCellReference = function (index, lineNumber) {
     return (index > 25) ? ALPHA[Math.floor((index/26)-1)] + ALPHA[index % 26] + lineNumber : ALPHA[index] + lineNumber;
 }
-
-var myParseInt = function (string, defaultValue) {
-    var int = parseInt(string, 10);
-
-    if (typeof int == 'number') {
-        return int;
-    } else {
-        return defaultValue;
-    }
-};
 
 program.action(handler);
 program.parse(process.argv);

@@ -37,3 +37,4 @@ A command line interface for interacting with AEM APIs.
   Options:
 
     -r, --root-path <root-path>  When reporting start from this point. Default is /etc/tags
+    -l, --limit <limit>          The tag pagination limit. Default is 30
