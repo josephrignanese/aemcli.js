@@ -19,7 +19,7 @@ A command line interface for interacting with AEM APIs.
 
 ### Package Install
 
-  Usage: aem package install [options] <file>
+  Usage: aem package install [options] \<file>
 
   Options:
 
@@ -32,7 +32,7 @@ A command line interface for interacting with AEM APIs.
 
 ### Report Tags
 
-  Usage: aem report tags [options] <file>
+  Usage: aem report tags [options] \<file>
 
   Options:
 
